@@ -4,6 +4,7 @@
 #include <csignal>
 #include <iostream>
 #include <limits>
+#include <thread>
 
 volatile sig_atomic_t flag = 0;
 void handleSig(int sig)
@@ -163,11 +164,13 @@ int main()
 
     std::cout << "Recording from device: " << device << ".\nPress Ctrl+C to exit." << std::endl;
 
-    MyRecorder rec(device, 8000, 700, 200, 50);
+    MyRecorder rec(device, 8000, 700, 100, 60);
     rec.start();
 
     signal(SIGINT, handleSig);
-    while(!flag);
+    while(!flag)
+        std::this_thread::sleep_for (std::chrono::milliseconds(60));
+
     std::cout << "\nExiting..." << std::endl;
 
     rec.stop();
