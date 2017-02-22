@@ -14,7 +14,7 @@ void handleSig(int sig)
 class MyRecorder : public sf::SoundRecorder
 {
 public:
-    MyRecorder(short threshold, int release, int interval)
+    MyRecorder(std::string device, short threshold, int release, int interval)
     : m_amplitude {0}, m_decrease{0}
     {
         m_threshold = threshold;
@@ -22,6 +22,7 @@ public:
         m_interval = interval;
 
         setProcessingInterval(sf::milliseconds(m_interval));
+        setDevice(device);
 
         int amp = m_threshold;
         amp *= m_screenWidth;
@@ -131,9 +132,33 @@ int main()
     for(unsigned i=0; i<availableDevices.size(); ++i)
         std::cout << i+1 << ". " << availableDevices[i] << std::endl;
 
-    std::cout << "Press Ctrl+C to exit." << std::endl;
+    std::string device;
 
-    MyRecorder rec(8000, 500, 50);
+    if(availableDevices.size() > 1)
+    {
+        unsigned value = 0;
+        while(value < 1 || value > availableDevices.size())
+        {
+            std::cout << "Enter device number (1-" << availableDevices.size() << "): ";
+            std::string line;
+            std::getline(std::cin, line);
+            try
+            {
+                value = std::stoul(line);
+            }
+            catch(std::exception)
+            {
+                std::cout << "Please enter a number." << std::endl;
+            }
+        }
+        device = availableDevices[value - 1];
+    }
+    else
+        device = availableDevices.front();
+
+    std::cout << "Recording from device: " << device << ".\nPress Ctrl+C to exit." << std::endl;
+
+    MyRecorder rec(device, 8000, 500, 50);
     rec.start();
 
     signal(SIGINT, handleSig);
