@@ -14,10 +14,11 @@ void handleSig(int sig)
 class MyRecorder : public sf::SoundRecorder
 {
 public:
-    MyRecorder(std::string device, short threshold, int release, int interval)
+    MyRecorder(std::string device, short threshold, float multiplier, int release, int interval)
     : m_amplitude {0}, m_decrease{0}
     {
         m_threshold = threshold;
+        m_multiplier = multiplier;
         m_release = release;
         m_interval = interval;
 
@@ -47,6 +48,7 @@ private:
     int m_interval;
     int m_release;
     short m_decrease;
+    float m_multiplier;
 
     bool m_pressed = false;
 
@@ -67,11 +69,14 @@ private:
         std::vector<short> buffer(samples, samples + sampleCount);
 
         for(auto sample : buffer)
-            if(std::abs(sample) > m_amplitude)
+        {
+            short value = std::min(std::abs(sample) * m_multiplier, static_cast<float>(std::numeric_limits<decltype(sample)>::max()));
+            if(value > m_amplitude)
             {
-                m_amplitude = std::abs(sample);
+                m_amplitude = value;
                 m_decrease = m_amplitude / (m_release / m_interval);
             }
+        }
 
         INPUT ip;
         ip.type = INPUT_KEYBOARD;
@@ -158,7 +163,7 @@ int main()
 
     std::cout << "Recording from device: " << device << ".\nPress Ctrl+C to exit." << std::endl;
 
-    MyRecorder rec(device, 8000, 500, 50);
+    MyRecorder rec(device, 8000, 700, 200, 50);
     rec.start();
 
     signal(SIGINT, handleSig);
