@@ -6,12 +6,6 @@
 #include <limits>
 #include <thread>
 
-volatile sig_atomic_t flag = 0;
-void handleSig(int sig)
-{
-    flag = 1;
-}
-
 class MyRecorder : public sf::SoundRecorder
 {
 public:
@@ -59,9 +53,6 @@ private:
 
     bool onProcessSamples(const sf::Int16* samples, std::size_t sampleCount) override
     {
-        if(flag)
-            return false;
-
         if(m_amplitude - m_decrease < 0)
             m_amplitude = 0;
         else
@@ -127,6 +118,8 @@ private:
     }
 };
 
+volatile sig_atomic_t running = 1;
+
 int main()
 {
     std::cout.sync_with_stdio(false);
@@ -162,16 +155,17 @@ int main()
     else
         device = availableDevices.front();
 
-    std::cout << "Recording from device: " << device << ".\nPress Ctrl+C to exit." << std::endl;
+    std::cout << "Recording now from device: " << device << ".\nPress Ctrl+C to exit." << std::endl;
 
+    // ctor: device, threshold, multiplier, release, interval
     MyRecorder rec(device, 8000, 700, 100, 60);
     rec.start();
 
-    signal(SIGINT, handleSig);
-    while(!flag)
+    signal(SIGINT, [](int signum){ running = 0;});
+    while(running)
         std::this_thread::sleep_for (std::chrono::milliseconds(60));
 
-    std::cout << "\nExiting..." << std::endl;
-
     rec.stop();
+
+    std::cout << "\nEnd of reccord. Exiting..." << std::endl;
 }
