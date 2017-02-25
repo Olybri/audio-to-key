@@ -5,6 +5,7 @@
 #include <iostream>
 #include <limits>
 #include <thread>
+#include <algorithm>
 
 class MyRecorder : public sf::SoundRecorder
 {
@@ -60,14 +61,16 @@ private:
 
         std::vector<short> buffer(samples, samples + sampleCount);
 
-        for(auto sample : buffer)
+        auto max = *std::max_element(buffer.begin(), buffer.end(),
+            [](int a, int b){ return std::abs(a) < std::abs(b); });
+
+        max = std::min(std::abs(max) * m_multiplier,
+            static_cast<float>(std::numeric_limits<decltype(max)>::max()));
+
+        if(max > m_amplitude)
         {
-            short value = std::min(std::abs(sample) * m_multiplier, static_cast<float>(std::numeric_limits<decltype(sample)>::max()));
-            if(value > m_amplitude)
-            {
-                m_amplitude = value;
-                m_decrease = m_amplitude / (m_release / m_interval);
-            }
+            m_amplitude = max;
+            m_decrease = m_amplitude / (m_release / m_interval);
         }
 
         INPUT ip;
