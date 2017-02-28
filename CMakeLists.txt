@@ -16,6 +16,6 @@ set(CMAKE_CXX_FLAGS "-s -O3 -static")
 file(GLOB_RECURSE source_files src/*)
 add_executable(atk ${source_files})
 
-target_link_libraries(atk sfml-audio-s sfml-system-s openal32 winmm)
+target_link_libraries(atk stdc++fs sfml-audio-s sfml-system-s openal32 winmm)
 
 add_definitions(-DSFML_STATIC)

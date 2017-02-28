@@ -1,3 +1,5 @@
+// Audio-to-Key v0.1 © 2017 Loris Witschard
+
 #include <SFML/Audio/SoundBufferRecorder.hpp>
 #include <windows.h> // SendInput
 #include <iostream> // std::cout
@@ -103,7 +105,7 @@ private:
 
         int amp = m_amplitude;
         amp *= m_screenWidth;
-        amp /= 32800;
+        amp /= std::numeric_limits<decltype(m_amplitude)>::max();
 
         for(int i=0; i<amp; ++i)
             std::cout << "O";
