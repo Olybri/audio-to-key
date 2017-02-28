@@ -9,7 +9,7 @@
 namespace std { namespace filesystem = experimental::filesystem; }
 
 #include "recorder.hpp"
-#include "json.hpp"
+#include "../lib/json.hpp"
 namespace nl = nlohmann;
 
 /////////////////////////////////////
