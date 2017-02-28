@@ -1,4 +1,4 @@
-// Audio-to-Key v0.1 © 2017 Loris Witschard
+// © 2017 Loris Witschard
 
 #include <SFML/Audio/SoundBufferRecorder.hpp>
 #include <windows.h> // SendInput

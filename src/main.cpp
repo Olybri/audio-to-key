@@ -9,6 +9,8 @@
 namespace std { namespace filesystem = experimental::filesystem; }
 
 #include "recorder.hpp"
+#include "ston.hpp"
+
 #include "../lib/json.hpp"
 namespace nl = nlohmann;
 
@@ -29,14 +31,7 @@ T getNumber(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T
         T value;
         try
         {
-            if(std::is_integral<T>::value)
-                if(std::is_unsigned<T>::value)
-                    value = std::stoul(line);
-                else
-                    value = std::stol(line);
-
-            else if(std::is_floating_point<T>::value)
-                value = std::stof(line);
+            value = ston<T>(line);
 
             if(value < min)
                 throw std::runtime_error("Value too small.");
