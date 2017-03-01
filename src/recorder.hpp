@@ -9,13 +9,14 @@
 class SignalToKey : public sf::SoundRecorder
 {
 public:
-    SignalToKey(std::string device, short threshold, float multiplier, int release, int interval)
+    SignalToKey(WORD key, std::string device, short threshold, float multiplier, int release, int interval)
     : m_amplitude {0}, m_decrease{0}
     {
         m_threshold = threshold;
         m_multiplier = multiplier;
         m_release = release;
         m_interval = interval;
+        m_key = key;
 
         setProcessingInterval(sf::milliseconds(m_interval));
         setDevice(device);
@@ -32,7 +33,7 @@ public:
         std::cout << "Threshold\n    ";
 
         for(int i=0; i<m_screenWidth; ++i)
-            std::cout << (i == amp ? "T" : "-");
+            std::cout << (i == amp ? 'T' : '-');
 
         std::cout << std::endl;
     }
@@ -44,6 +45,7 @@ private:
     int m_release;
     short m_decrease;
     float m_multiplier;
+    WORD m_key;
 
     bool m_pressed = false;
 
@@ -76,7 +78,7 @@ private:
         ip.ki.wScan = 0;
         ip.ki.time = 0;
         ip.ki.dwExtraInfo = 0;
-        ip.ki.wVk = VK_CONTROL;
+        ip.ki.wVk = m_key;
 
         if(m_amplitude > m_threshold)
         {
@@ -107,11 +109,8 @@ private:
         amp *= m_screenWidth;
         amp /= std::numeric_limits<decltype(m_amplitude)>::max();
 
-        for(int i=0; i<amp; ++i)
-            std::cout << "O";
-
-        for(int i=0; i<m_screenWidth - amp; ++i)
-            std::cout << "-";
+        for(int i=0; i<m_screenWidth; ++i)
+            std::cout << (i < amp ? 'O' : '-');
 
         std::cout << "\r" << std::flush;
 

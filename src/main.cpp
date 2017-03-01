@@ -10,6 +10,7 @@ namespace std { namespace filesystem = experimental::filesystem; }
 
 #include "recorder.hpp"
 #include "ston.hpp"
+#include "stovk.hpp"
 
 #include "../lib/json.hpp"
 namespace nl = nlohmann;
@@ -73,6 +74,23 @@ auto getDevice()
     }
 }
 
+auto getKey()
+{
+    WORD key = 0;
+    while(!key)
+    {
+        std::string line;
+        std::getline(std::cin, line);
+
+        key = stovk(line);
+
+        if(!key)
+            std::cout << "Unsupported key. Enter another key: ";
+    }
+
+    return key;
+}
+
 /////////////////////////////////////
 //   MAIN
 /////////////////////////////////////
@@ -91,6 +109,9 @@ int main()
     if(!std::filesystem::exists(configPath))
     {
         std::cout << "Starting initial configuration." << std::endl;
+
+        std::cout << "Enter a keyboard key: ";
+        config["key"] = getKey();
 
         config["device"] = getDevice();
 
@@ -119,7 +140,7 @@ int main()
 
     std::cout << "Recording now from device: " << config["device"] << ".\nPress Ctrl+C to exit." << std::endl;
 
-    SignalToKey rec(config["device"], config["threshold"], config["multiplier"], config["release"], 60);
+    SignalToKey rec(config["key"], config["device"], config["threshold"], config["multiplier"], config["release"], 60);
     rec.start();
 
     #pragma GCC diagnostic ignored "-Wunused-parameter"
