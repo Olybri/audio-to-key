@@ -118,17 +118,5 @@ WORD stovk(const std::string & input)
     if(str == "." || str == "DOT" || str == "FULLSTOP" || str == "FULL STOP" || str == "PERIOD")
         return VK_OEM_PERIOD;
 
-    if(str == "+" || str == "PLUS")
-        return VK_OEM_PLUS;
-
-    if(str == "+" || str == "PLUS")
-        return VK_OEM_PLUS;
-
-    if(str == "+" || str == "PLUS")
-        return VK_OEM_PLUS;
-
-    if(str == "+" || str == "PLUS")
-        return VK_OEM_PLUS;
-
     return 0;
 }
