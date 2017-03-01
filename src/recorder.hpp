@@ -70,7 +70,7 @@ private:
         if(pick > m_amplitude)
         {
             m_amplitude = pick;
-            m_decrease = m_amplitude / (m_release / m_interval);
+            m_decrease = m_amplitude / std::max(m_release / m_interval, 1);
         }
 
         INPUT ip;
